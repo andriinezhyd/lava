@@ -1,4 +1,4 @@
-(async () => {
+(async ($) => {
     const getData = async (url) => {
         const lastPage = await getLastPage(url);
         console.log("lastPage", lastPage);
@@ -91,10 +91,56 @@
 
     const properties = oneProduct[0].properties.map((p) => Object.values(p));
 
+    // Get all properties of all products
+    products.map((product, p) => {
+        const offers = product;
+        const offerFirst = offers[0]
+        const parameters = offerFirst.product.properties_agg
+        const name = offerFirst.product.name
+        console.log(`name = ${name} - #${p}`)
+
+        let colors = []
+        let sizes = []
+        let models = []
+
+        for (const [key, value] of Object.entries(parameters)) {
+            console.log(`${key}: ${value}`);
+            switch (key) {
+                case 'Розмір':
+                    sizes.push(...value)
+                    break;
+                case 'Колір':
+                case 'Koлір':
+                    colors.push(...value)
+                    break;
+                case 'Тип':
+                case 'Модель':
+                    models.push(...value)
+                    break;
+            }
+        }
+
+
+        $("#main").append(`<table>
+                        <tr>
+                        <tr>
+                            <td>${name}</td>
+                        </tr>
+
+                        </tr>
+                      <table>`) ;
+
+
+
+    })
+
     console.log("properties");
     properties.forEach((element) => {
         console.log(element[0]);
     });
-})();
+})(jQuery);
+
+
+
 
 
