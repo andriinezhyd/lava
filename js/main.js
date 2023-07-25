@@ -77,10 +77,12 @@
         else a.push([c]);
         return a;
     }, []);
+    products = [products[10], products[11], products[12], products[15]]
+    //products = [products[0]]
 
     console.log("products", products);
 
-    const oneProduct = products[2]; //Array of {}
+    const oneProduct = products[0]; //Array of {}
     console.log(
         "oneProduct: ",
         oneProduct[0].product.name,
@@ -89,7 +91,7 @@
     );
     //oneProduct.map((p) => console.log(p.properties.length));
 
-    const properties = oneProduct[0].properties.map((p) => Object.values(p));
+    // const properties = oneProduct[0].properties.map((p) => Object.values(p));
 
     // Get all properties of all products
     products.map((product, p) => {
@@ -98,6 +100,8 @@
         const parameters = offerFirst.product.properties_agg
         const name = offerFirst.product.name
         console.log(`name = ${name} - #${p}`)
+
+
 
         let colors = []
         let sizes = []
@@ -120,23 +124,103 @@
             }
         }
 
+        const widthLeftSide = !!models.length ? 2 : 1
 
-        $("#main").append(`<table>
-                        <tr>
-                        <tr>
-                            <td>${name}</td>
-                        </tr>
+        const getСoordinatesY = (props) => {
+            let y = null
+            let obj = {}
+            let color = ""
+            let model = ""
+            let size = ""
 
-                        </tr>
-                      <table>`) ;
+            props.forEach((item , i) => {
+                obj[item.name] = item.value
+            })
 
+            for (const [key, value] of Object.entries(obj)) {
+                switch (key) {
+                    case 'Розмір': size = value
+                        break;
+                    case 'Колір':
+                    case 'Koлір': color = value
+                        break;
+                    case 'Тип':
+                    case 'Модель': model = value
+                        break;
+                }
+            }
+
+            let testArr = [model, color, size]
+            // console.log(`testArr: ${testArr}`)
+            //Logger.log(`model: ${model}`)
+            //debugger
+
+            !models.length && colors.map((item, i) => {
+                props.map(prop => {
+                    if (item == prop.value) y = i
+                })
+            })
+
+            // !!models.length && leftList.map((item, i) => {
+            //
+            //     let allFounded = item.every( ai => testArr.includes(ai) );
+            //     //allFounded && Logger.log(`allFounded true`)
+            //     //if (item[0] == model && item[1] == color)
+            //     if (allFounded)
+            //     {
+            //         y = i
+            //
+            //     }
+            // })
+            //console.log(`return y: ${y + 1}`)
+            return y + 1
+        }
+
+        const getСoordinatesX = (prop) => {
+            let x = null
+            sizes.map((size, k) => {
+                prop.map((item, i) => {
+                    if (size == item.value) x = k
+                })
+            })
+            return x + widthLeftSide + 1
+        }
+
+        $("#accordion").append(`<h3>${name}</h3><div>
+            <table dataname = "${name}" class="table table-bordered"><tr><th><h4>${name}</h4></th></tr></table>
+        </div>`) ;
+        // console.log("sizes", sizes);
+        colors.map(c => {
+            $("#accordion > div:last-child > table").append(`<tr><td>${c}</td></tr>`)
+        })
+        sizes.map(s => {
+            $("#accordion > div:last-child > table  tr:first-child").append(`<th>${s}</th>`)
+            $("#accordion > div:last-child > table  tr:not(:first-child)").append(`<td></td>`)
+        })
+
+        offersCRM.map((offer, o) => {
+            const quantity = offer.quantity
+            const properties = offer.properties
+            const nameOffer = offer.product.name
+            // name === nameOffer && console.log("paramY", paramY)
+            if (name === nameOffer) {
+                const paramY = getСoordinatesY(properties)
+                const paramX = getСoordinatesX(properties)
+                $(`[dataname="${name}"]`).find(`tr:nth-child(${paramY + 1})`).find(`td:nth-child(${paramX})`).text(quantity)
+            }
+        })
+
+        //debugger
 
 
     })
 
-    console.log("properties");
-    properties.forEach((element) => {
-        console.log(element[0]);
+    // properties.forEach((element) => {
+    //     console.log(element[0]);
+    // });
+    $( "#accordion" ).accordion({
+        collapsible: true,
+        heightStyle: "content"
     });
 })(jQuery);
 
